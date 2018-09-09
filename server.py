@@ -38,25 +38,115 @@ def get_vehicle_info(car_id):
                             'doorCount': door_count,
                             'driveTrain': drive_train
                             }
-    pprint.pprint(smartcar_vehicle_info)
+    # pprint.pprint(smartcar_vehicle_info)
     return jsonify(smartcar_vehicle_info)
 
-
-def get_security_status(car_id, response_type):
+@app.route('/vehicles/<car_id>/doors', methods=['GET'])
+def get_security_status(car_id):
 
     """
     Make request to GM api for security status
     and return results in Smartcar API format.
     """
 
-    pass
+    security_status_url = base_url + 'getSecurityStatusService'
+    search_param = {
+        'id': car_id,
+        'responseType': 'JSON'
+    }
+    data = requests.post(security_status_url, data=json.dumps(search_param), headers=headers)
+    gm_data = data.json()
+    # pprint.pprint(gm_data)
+    smartcar_security_status = []
+    for status in gm_data['data']['doors']['values']:
+        smartcar_security_status.append({'location': status['location']['value'], 'locked': status['locked']['value']})
+    pprint.pprint(smartcar_security_status)
+    return jsonify(smartcar_security_status)
 
+@app.route('/vehicles/<car_id>/fuel', methods=['GET'])
+def get_tank_level(car_id):
     
+    """
+    Make request to GM api for tank level
+    and return results in Smartcar API format.
+    """
+    energy_serice_url = base_url + 'getEnergyService'
+    search_param = {
+        'id': car_id,
+        'responseType': 'JSON'
+    }
+    data = requests.post(energy_serice_url, data=json.dumps(search_param), headers=headers)
+    gm_data = data.json()
+    fuel = gm_data['data']['tankLevel']['value']
+    fuel_level = {
+                    'fuel': fuel
+                    }
+    # pprint.pprint(smartcar_vehicle_info)
+    return jsonify(fuel_level)
 
 
+@app.route('/vehicles/<car_id>/battery', methods=['GET'])
+def get_battery_level(car_id):
+    
+    """
+    Make request to GM api for battery level
+    and return results in Smartcar API format.
+    """
+    energy_serice_url = base_url + 'getEnergyService'
+    search_param = {
+        'id': car_id,
+        'responseType': 'JSON'
+    }
+    data = requests.post(energy_serice_url, data=json.dumps(search_param), headers=headers)
+    gm_data = data.json()
+    battery = gm_data['data']['batteryLevel']['value']
+    battery_level = {
+                    'battery': battery
+                    }
+    # pprint.pprint(smartcar_vehicle_info)
+    return jsonify(battery_level)
 
-# print(data)
-#get_vehicle_info("1234")
+@app.route('/vehicles/<car_id>/engine', methods=['POST'])
+def change_engine_status(car_id):
+
+    """
+    Make request to GM api for engine status
+    and change engine status in Smartcar API format.
+    """
+
+    engine_status_url = base_url + 'actionEngineService'
+    change_engine = json.loads(request.data)
+    if change_engine['action'].upper() == 'START':
+        search_param = {
+            'id': car_id,
+            "command": "START_VEHICLE",
+            'responseType': 'JSON'
+        }
+        data = requests.post(engine_status_url, data=json.dumps(search_param), headers=headers)
+        gm_data = data.json()
+    if change_engine['action'].upper() == 'STOP':
+        search_param = {
+            'id': car_id,
+            "command": "STOP_VEHICLE",
+            'responseType': 'JSON'
+        }
+        data = requests.post(engine_status_url, data=json.dumps(search_param), headers=headers)
+        gm_data = data.json()
+
+    engine_status = gm_data['actionResult']['status']
+    if engine_status == "EXECUTED":
+        action_status = {
+                        'action': 'success'
+        }
+    if engine_status == "FAILED":
+        action_status = {
+                        'action': 'error'
+        }
+    return jsonify(action_status)
+
+        
+
+
 
 if __name__ == "__main__":
     app.debug = True

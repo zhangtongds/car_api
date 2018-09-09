@@ -116,32 +116,22 @@ def change_engine_status(car_id):
 
     engine_status_url = base_url + 'actionEngineService'
     change_engine = json.loads(request.data)
+    search_param = {
+            'id': car_id,
+            'responseType': 'JSON'
+        }
     if change_engine['action'].upper() == 'START':
-        search_param = {
-            'id': car_id,
-            "command": "START_VEHICLE",
-            'responseType': 'JSON'
-        }
-        data = requests.post(engine_status_url, data=json.dumps(search_param), headers=headers)
-        gm_data = data.json()
-    if change_engine['action'].upper() == 'STOP':
-        search_param = {
-            'id': car_id,
-            "command": "STOP_VEHICLE",
-            'responseType': 'JSON'
-        }
-        data = requests.post(engine_status_url, data=json.dumps(search_param), headers=headers)
-        gm_data = data.json()
-
+        search_param['command'] = 'START_VEHICLE'
+    elif change_engine['action'].upper() == 'STOP':
+        search_param['command'] = 'STOP_VEHICLE'
+    data = requests.post(engine_status_url, data=json.dumps(search_param), headers=headers)
+    gm_data = data.json()
     engine_status = gm_data['actionResult']['status']
+    action_status = {}
     if engine_status == "EXECUTED":
-        action_status = {
-                        'action': 'success'
-        }
-    if engine_status == "FAILED":
-        action_status = {
-                        'action': 'error'
-        }
+        action_status['action'] = 'success'
+    elif engine_status == "FAILED":
+        action_status['action'] = 'error'
     return jsonify(action_status)
 
         

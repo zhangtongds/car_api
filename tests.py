@@ -1,19 +1,62 @@
-import requests
+
 import json
+import server
+import unittest
 
-# tests 
+class SmartcarTestCase(unittest.TestCase):
+    """
+    Test cases for returned results from Flask server.
+    """
 
-data = requests.get('http://0.0.0.0:5000/vehicles/1689')
+    def test_vehicle_info(self):
+        """
+        Testing returned keys from vehicle info.
+        """
 
-security = requests.get('http://0.0.0.0:5000/vehicles/gfafda/doors').json()
+        client = server.app.test_client()
+        result = client.get('/vehicles/1235')
+        self.assertIn(b'vin', result.data)
+        self.assertIn(b'color', result.data)
+        self.assertIn(b'driveTrain', result.data)
+        self.assertIn(b'doorCount', result.data)
 
-fuel = requests.get('http://0.0.0.0:5000/vehicles/adfa/fuel').json()
+    def test_get_security_status(self):
+        """
+        Testing returned keys from security status.
+        """
 
-battery = requests.get('http://0.0.0.0:5000/vehicles/yutgygh/battery').json()
+        client = server.app.test_client()
+        result = client.get('/vehicles/1234/doors')
+        self.assertIn(b'location', result.data)
+        self.assertIn(b'locked', result.data)
+
+    def test_get_tank_level(self):
+        """
+        Testing returned keys from fuel level.
+        """
+
+        client = server.app.test_client()
+        result = client.get('/vehicles/1235/fuel')
+        self.assertIn(b'fuel', result.data)
+
+    def test_get_battery_level(self):
+        """
+        Testing returned keys from battery level.
+        """
+
+        client = server.app.test_client()
+        result = client.get('/vehicles/1234/battery')
+        self.assertIn(b'battery', result.data)
 
 
-data = json.dumps({
-        "action": "fdajkfja"
-        })
-engine = requests.post('http://0.0.0.0:5000/vehicles/1234/engine', data=data).json()
-print(engine)
+    def test_change_engine_status(self):
+        """
+        Testing returned keys from engine status.
+        """
+
+        client = server.app.test_client()
+        result = client.post('/vehicles/1235/engine', data=json.dumps({'action': 'START'}))
+        self.assertIn(b'action', result.data)
+
+if __name__ == '__main__':
+    unittest.main()

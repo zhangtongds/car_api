@@ -12,11 +12,11 @@ base_url = 'http://gmapi.azurewebsites.net/'
 
 @app.route('/vehicles/<car_id>', methods=['GET'])
 def get_vehicle_info(car_id):
-    
     """
     Make request to GM api for vehicle information
     and return results in Smartcar API format.
     """
+
     vehicle_info_url = base_url + 'getVehicleInfoService'
     search_param = {
         'id': car_id,
@@ -46,7 +46,6 @@ def get_vehicle_info(car_id):
 
 @app.route('/vehicles/<car_id>/doors', methods=['GET'])
 def get_security_status(car_id):
-
     """
     Make request to GM api for security status
     and return results in Smartcar API format.
@@ -60,8 +59,6 @@ def get_security_status(car_id):
     data = requests.post(security_status_url, data=json.dumps(search_param), headers=headers)
     gm_data = data.json()
     smartcar_security_status = []
-    print('afdhakjfdhafljk')
-    print(gm_data, "=======")
     try:
         for status in gm_data['data']['doors']['values']:
             smartcar_security_status.append({'location': status['location']['value'], 'locked': status['locked']['value']})
@@ -71,8 +68,7 @@ def get_security_status(car_id):
         return jsonify(gm_data)
 
 @app.route('/vehicles/<car_id>/fuel', methods=['GET'])
-def get_tank_level(car_id):
-    
+def get_tank_level(car_id):  
     """
     Make request to GM api for tank level
     and return results in Smartcar API format.
@@ -95,8 +91,7 @@ def get_tank_level(car_id):
 
 
 @app.route('/vehicles/<car_id>/battery', methods=['GET'])
-def get_battery_level(car_id):
-    
+def get_battery_level(car_id): 
     """
     Make request to GM api for battery level
     and return results in Smartcar API format.
@@ -119,7 +114,6 @@ def get_battery_level(car_id):
 
 @app.route('/vehicles/<car_id>/engine', methods=['POST'])
 def change_engine_status(car_id):
-
     """
     Make request to GM api for engine status
     and change engine status in Smartcar API format.

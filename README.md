@@ -1,4 +1,3 @@
-# Smartcar Backend Coding Challenge - Tong Zhang
 ## Summary
 This app is built with Python on Flask.
 This is the document that explains how to initialize and run the app.   
@@ -19,7 +18,7 @@ Please follow the below steps to have this app running on your computer:
 
 Download the folder:
 ```
-/Smartcar_Tong_Zhang
+/smartcar
 ```
 
 Create a virtual environment:
